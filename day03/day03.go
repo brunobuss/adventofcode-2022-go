@@ -73,19 +73,23 @@ func diffPriority(runsack string) int {
 }
 
 func badgePriority(runsack1, runsack2, runsack3 string) int {
-	var cOne map[byte]int = map[byte]int{}
+	var bc1 map[byte]int = map[byte]int{}
 	for _, v := range runsack1 {
-		cOne[byte(v)]++
+		bc1[byte(v)]++
 	}
-	var cTwo map[byte]int = map[byte]int{}
+	var bcBoth map[byte]int = map[byte]int{}
 	for _, v := range runsack2 {
-		cTwo[byte(v)]++
+		// Items not present in the first set, cannot be badge candidates
+		// so we only add ones also present there.
+		if bc1[byte(v)] != 0 {
+			bcBoth[byte(v)]++
+		}
 	}
 	for _, v := range runsack3 {
-		if cOne[byte(v)] != 0 && cTwo[byte(v)] != 0 {
+		if bcBoth[byte(v)] != 0 {
 			return int(priority(byte(v)))
 		}
 	}
-	log.Fatalln("Badge Not Found: ", cOne, cTwo, runsack3)
+	log.Fatalln("Badge Not Found: ", bc1, bcBoth, runsack3)
 	return 0
 }
