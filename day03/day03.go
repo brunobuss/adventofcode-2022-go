@@ -18,20 +18,20 @@ func main() {
 	dp := 0
 	bp := 0
 	for {
-		runsack1, runsack2, runsack3, s := readGroup(scanner)
+		rucksack1, rucksack2, rucksack3, s := readGroup(scanner)
 		if !s {
 			break
 		}
-		dp += diffPriority(runsack1) + diffPriority(runsack2) + diffPriority(runsack3)
-		bp += badgePriority(runsack1, runsack2, runsack3)
+		dp += diffPriority(rucksack1) + diffPriority(rucksack2) + diffPriority(rucksack3)
+		bp += badgePriority(rucksack1, rucksack2, rucksack3)
 	}
 	fmt.Println("Diff Priority Sum: ", dp)
 	fmt.Println("Badge Priority Sum: ", bp)
 }
 
-// Read groups of 3 runsacks
+// Read groups of 3 rucksack
 func readGroup(scanner *bufio.Scanner) (string, string, string, bool) {
-	var runsacks []string
+	var rucksacks []string
 	for i := 0; i < 3; i++ {
 		if !scanner.Scan() {
 			return "", "", "", false
@@ -42,9 +42,9 @@ func readGroup(scanner *bufio.Scanner) (string, string, string, bool) {
 		if n != 1 {
 			log.Fatal("Error reading line: ", err)
 		}
-		runsacks = append(runsacks, r)
+		rucksacks = append(rucksacks, r)
 	}
-	return runsacks[0], runsacks[1], runsacks[2], true
+	return rucksacks[0], rucksacks[1], rucksacks[2], true
 }
 
 func priority(item byte) byte {
@@ -57,39 +57,39 @@ func priority(item byte) byte {
 	return 0
 }
 
-func diffPriority(runsack string) int {
-	h := len(runsack) / 2
+func diffPriority(rucksack string) int {
+	h := len(rucksack) / 2
 	var cOne map[byte]int = map[byte]int{}
-	for _, v := range runsack[:h] {
+	for _, v := range rucksack[:h] {
 		cOne[byte(v)]++
 	}
-	for _, v := range runsack[h:] {
+	for _, v := range rucksack[h:] {
 		if cOne[byte(v)] != 0 {
 			return int(priority(byte(v)))
 		}
 	}
-	log.Fatalln("Duplicated item not found: ", runsack)
+	log.Fatalln("Duplicated item not found: ", rucksack)
 	return 0
 }
 
-func badgePriority(runsack1, runsack2, runsack3 string) int {
+func badgePriority(rucksack1, rucksack2, rucksack3 string) int {
 	var bc1 map[byte]int = map[byte]int{}
-	for _, v := range runsack1 {
+	for _, v := range rucksack1 {
 		bc1[byte(v)]++
 	}
 	var bcBoth map[byte]int = map[byte]int{}
-	for _, v := range runsack2 {
+	for _, v := range rucksack2 {
 		// Items not present in the first set, cannot be badge candidates
 		// so we only add ones also present there.
 		if bc1[byte(v)] != 0 {
 			bcBoth[byte(v)]++
 		}
 	}
-	for _, v := range runsack3 {
+	for _, v := range rucksack3 {
 		if bcBoth[byte(v)] != 0 {
 			return int(priority(byte(v)))
 		}
 	}
-	log.Fatalln("Badge Not Found: ", bc1, bcBoth, runsack3)
+	log.Fatalln("Badge Not Found: ", bc1, bcBoth, rucksack3)
 	return 0
 }
