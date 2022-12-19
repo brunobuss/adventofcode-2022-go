@@ -86,6 +86,15 @@ func backtrack(b blueprint, s state, memo map[state]stockpile) stockpile {
 	if s.minutes == 0 {
 		return s.s
 	}
+
+	// Cap search space if we ever have more stockpile than we could ever use.
+	if s.s.obdisian >= b.geodeRobot.obsidian*s.minutes {
+		s.s.obdisian = b.geodeRobot.obsidian * s.minutes
+	}
+	if s.s.clay >= b.obsidianRobot.clay*s.minutes {
+		s.s.clay = b.obsidianRobot.clay * s.minutes
+	}
+
 	if v, e := memo[s]; e {
 		return v
 	}
