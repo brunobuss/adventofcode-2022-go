@@ -13,7 +13,7 @@ func init() {
 }
 
 type cost struct {
-	ore, clay, obsidian int
+	ore, clay, obsidian int16
 }
 
 type blueprint struct {
@@ -21,15 +21,15 @@ type blueprint struct {
 }
 
 type fleet struct {
-	ore, clay, obsidian, geode int
+	ore, clay, obsidian, geode int16
 }
 
 type stockpile struct {
-	ore, clay, obdisian, geode int
+	ore, clay, obdisian, geode int16
 }
 
 type state struct {
-	minutes int
+	minutes int16
 	f       fleet
 	s       stockpile
 }
@@ -41,14 +41,14 @@ func main() {
 	}
 	defer file.Close()
 
-	qls := 0
-	t3 := 1
+	qls := int16(0)
+	t3 := int16(1)
 
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		line := scanner.Text()
 		b := blueprint{}
-		bn := 0
+		bn := int16(0)
 		n, err := fmt.Sscanf(line,
 			"Blueprint %d: Each ore robot costs %d ore. Each clay robot costs %d ore. Each obsidian robot costs %d ore and %d clay. Each geode robot costs %d ore and %d obsidian.",
 			&bn, &b.oreRobot.ore, &b.clayRobot.ore, &b.obsidianRobot.ore, &b.obsidianRobot.clay, &b.geodeRobot.ore, &b.geodeRobot.obsidian,
@@ -60,7 +60,7 @@ func main() {
 		ss := state{}
 		ss.minutes = 24
 		ss.f.ore = 1
-		memo := make(map[state]int)
+		memo := make(map[state]int16)
 
 		r := backtrack(b, ss, memo)
 		log.Printf("24 min - Bp %d, Geodes: %d\n", bn, r)
@@ -82,7 +82,7 @@ func main() {
 	fmt.Println("[PartTwo] Top3 Geode Mul:", t3)
 }
 
-func backtrack(b blueprint, s state, memo map[state]int) int {
+func backtrack(b blueprint, s state, memo map[state]int16) int16 {
 	if s.minutes == 0 {
 		return s.s.geode
 	}
@@ -181,8 +181,8 @@ func backtrack(b blueprint, s state, memo map[state]int) int {
 	return best
 }
 
-func minutesToBuild(c cost, s stockpile, f fleet) int {
-	max := 0
+func minutesToBuild(c cost, s stockpile, f fleet) int16 {
+	max := int16(0)
 
 	oM := minutesToAquireRes(c.ore, f.ore, s.ore)
 	if oM == -1 {
@@ -208,7 +208,7 @@ func minutesToBuild(c cost, s stockpile, f fleet) int {
 	return max
 }
 
-func minutesToAquireRes(required, prodCycle, start int) int {
+func minutesToAquireRes(required, prodCycle, start int16) int16 {
 	if start >= required {
 		return 0
 	} else if prodCycle == 0 {
@@ -229,7 +229,7 @@ func build(c cost, s stockpile) stockpile {
 	return s
 }
 
-func produceForTurns(t int, f fleet, s stockpile) stockpile {
+func produceForTurns(t int16, f fleet, s stockpile) stockpile {
 	s.ore += f.ore * t
 	s.clay += f.clay * t
 	s.obdisian += f.obsidian * t
