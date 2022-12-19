@@ -103,7 +103,10 @@ func backtrack(b blueprint, s state, memo map[state]stockpile) stockpile {
 		sum := (nS.f.geode + nS.f.geode + s.minutes - 1) * s.minutes / 2
 		nS.s.geode = sum
 
-		memo[s] = nS.s
+		// Storing this state in memory doesn't really save a lot of time
+		// and uses *a lot* of memory with the sample input.
+		// Uncomment if 24+ GB of mem is available =p
+		// memo[s] = nS.s
 		return nS.s
 	}
 
