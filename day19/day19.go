@@ -113,7 +113,7 @@ func backtrack(b blueprint, s state, memo map[state]stockpile) stockpile {
 	// Build Ore Robot next if possible and if needed
 	if (s.f.ore < b.geodeRobot.ore) ||
 		(s.f.ore < b.obsidianRobot.ore && s.f.obsidian < b.geodeRobot.obsidian) ||
-		(s.f.ore < b.clayRobot.ore && s.f.clay < b.obsidianRobot.clay) {
+		(s.f.ore < b.clayRobot.ore && s.f.clay < b.obsidianRobot.clay && s.f.obsidian < b.geodeRobot.obsidian) {
 		if m := minutesToBuild(b.oreRobot, s.s, s.f); m != -1 && m < s.minutes {
 			nS := s
 			nS.s = produceForTurns(m+1, nS.f, build(b.oreRobot, nS.s))
