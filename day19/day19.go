@@ -60,31 +60,31 @@ func main() {
 		ss := state{}
 		ss.minutes = 24
 		ss.f.ore = 1
-		memo := make(map[state]stockpile)
+		memo := make(map[state]int)
 
 		r := backtrack(b, ss, memo)
-		log.Printf("24 min - Bp %d, Geodes: %d\n", bn, r.geode)
+		log.Printf("24 min - Bp %d, Geodes: %d\n", bn, r)
 		log.Println("Memo Size:", len(memo))
 
 		if bn <= 3 {
 			ss.minutes = 32
 			// We re-use memo since we're still on the same blueprint.
 			r32 := backtrack(b, ss, memo)
-			log.Printf("32 min - Bp %d, Geodes: %d\n", bn, r32.geode)
+			log.Printf("32 min - Bp %d, Geodes: %d\n", bn, r32)
 			log.Println("Memo Size:", len(memo))
-			t3 *= r32.geode
+			t3 *= r32
 		}
 
-		qls += bn * r.geode
+		qls += bn * r
 	}
 
 	fmt.Println("[PartOne] Quality Level Sum:", qls)
 	fmt.Println("[PartTwo] Top3 Geode Mul:", t3)
 }
 
-func backtrack(b blueprint, s state, memo map[state]stockpile) stockpile {
+func backtrack(b blueprint, s state, memo map[state]int) int {
 	if s.minutes == 0 {
-		return s.s
+		return s.s.geode
 	}
 
 	// Cap search space if we ever have more stockpile than we could ever use.
@@ -99,7 +99,7 @@ func backtrack(b blueprint, s state, memo map[state]stockpile) stockpile {
 		return v
 	}
 
-	best := s.s
+	best := s.s.geode
 
 	// If we can keep building more and more Geode robots each turn, just go for it
 	// Our fleet is currently self sufficient for producing geode robots for ever?
@@ -108,15 +108,13 @@ func backtrack(b blueprint, s state, memo map[state]stockpile) stockpile {
 	useFleetAndSp := (s.s.ore >= b.geodeRobot.ore) && ((b.geodeRobot.ore-s.f.ore)*s.minutes <= (s.s.ore - b.geodeRobot.ore)) &&
 		(s.s.obdisian >= b.geodeRobot.obsidian) && ((b.geodeRobot.obsidian-s.f.obsidian)*s.minutes <= (s.s.obdisian - b.geodeRobot.obsidian))
 	if usePureFleet || useFleetAndSp {
-		nS := s
-		sum := (nS.f.geode + nS.f.geode + s.minutes - 1) * s.minutes / 2
-		nS.s.geode = sum
+		sum := (s.f.geode + s.f.geode + s.minutes - 1) * s.minutes / 2
 
 		// Storing this state in memory doesn't really save a lot of time
 		// and uses *a lot* of memory with the sample input.
 		// Uncomment if 24+ GB of mem is available =p
 		// memo[s] = nS.s
-		return nS.s
+		return sum + s.s.geode
 	}
 
 	// Build Ore Robot next if possible and if needed
@@ -130,7 +128,7 @@ func backtrack(b blueprint, s state, memo map[state]stockpile) stockpile {
 			nS.minutes -= m + 1
 
 			r := backtrack(b, nS, memo)
-			if r.geode > best.geode {
+			if r > best {
 				best = r
 			}
 		}
@@ -145,7 +143,7 @@ func backtrack(b blueprint, s state, memo map[state]stockpile) stockpile {
 			nS.minutes -= m + 1
 
 			r := backtrack(b, nS, memo)
-			if r.geode > best.geode {
+			if r > best {
 				best = r
 			}
 		}
@@ -160,7 +158,7 @@ func backtrack(b blueprint, s state, memo map[state]stockpile) stockpile {
 			nS.minutes -= m + 1
 
 			r := backtrack(b, nS, memo)
-			if r.geode > best.geode {
+			if r > best {
 				best = r
 			}
 		}
@@ -174,7 +172,7 @@ func backtrack(b blueprint, s state, memo map[state]stockpile) stockpile {
 		nS.minutes -= m + 1
 
 		r := backtrack(b, nS, memo)
-		if r.geode > best.geode {
+		if r > best {
 			best = r
 		}
 	}
